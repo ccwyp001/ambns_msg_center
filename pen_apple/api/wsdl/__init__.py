@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-from .sms import SomeSoapService
+from .sms import SmsWebService
