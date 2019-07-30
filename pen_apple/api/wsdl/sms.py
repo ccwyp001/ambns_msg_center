@@ -9,7 +9,7 @@ from suds.client import Client
 from ...tasks import send_phone_call
 
 
-class SomeSoapService(spyne.Service):
+class SmsWebService(spyne.Service):
     __service_url_path__ = '/msg/SmsWebService.asmx'
     __in_protocol__ = Soap11(validator='lxml')
     __out_protocol__ = Soap11()
