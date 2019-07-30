@@ -12,7 +12,7 @@ CustomUnicode = Unicode.customize(nullable=False, max_occurs=1)
 
 class SmsWebService(spyne.Service):
     __service_url_path__ = '/msg/SmsWebService.asmx'
-    __in_protocol__ = Soap12(validator='lxml')
+    __in_protocol__ = Soap12()
     __out_protocol__ = Soap12()
 
     @spyne.srpc(CustomUnicode, CustomUnicode, CustomUnicode, CustomUnicode, _returns=CustomUnicode)
