@@ -9,7 +9,7 @@ from ...extensions import spyne
 from suds.client import Client
 from ...tasks import send_phone_call
 
-CustomUnicode = Unicode.customize(nullable=False, max_occurs=1)
+CustomUnicode = Unicode.customize(nullable=False, max_occurs="1")
 
 class SmsWebService(spyne.Service):
     __service_url_path__ = '/msg/SmsWebService.asmx'
