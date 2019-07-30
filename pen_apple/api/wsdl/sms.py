@@ -26,3 +26,11 @@ class SmsWebService(spyne.Service):
         result = client.service.SendMessage(strLsh, strPhone, strNR, strPartID)
         send_phone_call.delay(strLsh, strPhone, strNR, strPartID)
         return result
+
+    @spyne.srpc(Unicode, Unicode, Unicode, Unicode, _returns=Unicode)
+    def SendMessage2(strLsh, strPhone, strNR, strPartID=''):
+        sms_url = current_app.config['SMS_SOAP_URL']
+        client = Client(sms_url)
+        result = client.service.SendMessage(strLsh, strPhone, strNR, strPartID)
+        send_phone_call.delay(strLsh, strPhone, strNR, strPartID)
+        return result
