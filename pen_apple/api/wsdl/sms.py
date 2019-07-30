@@ -14,22 +14,10 @@ class SmsWebService(spyne.Service):
     __in_protocol__ = Soap11(validator='lxml')
     __out_protocol__ = Soap11()
 
-    @spyne.srpc(Unicode, Integer, _returns=Iterable(Unicode))
-    def echo(str, cnt):
-        for i in range(cnt):
-            yield str
-
     @spyne.srpc(Unicode, Unicode, Unicode, Unicode, _returns=Unicode)
     def SendMessage(strLsh, strPhone, strNR, strPartID=''):
         sms_url = current_app.config['SMS_SOAP_URL']
         client = Client(sms_url)
         result = client.service.SendMessage(strLsh, strPhone, strNR, strPartID)
         send_phone_call.delay(strLsh, strPhone, strNR, strPartID)
-        return result
-
-    @spyne.srpc(Unicode, _returns=Unicode)
-    def SendMessage2(strLsh):
-
-        result = strLsh
-
         return result
