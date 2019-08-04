@@ -16,6 +16,8 @@ class SmsWebService(spyne.Service):
     __in_protocol__ = Soap11()
     __out_protocol__ = Soap11()
 
+    # for c# soap client:
+    # need patch in spyne/interface/wsdl/wsdl11.py:326 change message name to 'parameters'
     @spyne.srpc(Unicode, Unicode, Unicode, Unicode, _returns=Unicode)
     def SendMessage(strLsh, strPhone, strNR, strPartID=''):
         sms_url = current_app.config['SMS_SOAP_URL']
