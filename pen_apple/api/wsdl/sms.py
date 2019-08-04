@@ -9,7 +9,6 @@ from ...extensions import spyne
 from suds.client import Client
 from ...tasks import send_phone_call
 
-CustomUnicode = Unicode.customize(max_occurs="1")
 
 class SmsWebService(spyne.Service):
     __target_namespace__ = 'http://tempuri.org/'
@@ -17,7 +16,7 @@ class SmsWebService(spyne.Service):
     __in_protocol__ = Soap11()
     __out_protocol__ = Soap11()
 
-    @spyne.srpc(CustomUnicode, CustomUnicode, CustomUnicode, CustomUnicode, _returns=CustomUnicode)
+    @spyne.srpc(Unicode, Unicode, Unicode, Unicode, _returns=Unicode)
     def SendMessage(strLsh, strPhone, strNR, strPartID=''):
         sms_url = current_app.config['SMS_SOAP_URL']
         client = Client(sms_url)
