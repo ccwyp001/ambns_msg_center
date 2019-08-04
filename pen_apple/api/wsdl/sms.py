@@ -17,8 +17,8 @@ class SmsWebService(spyne.Service):
     __in_protocol__ = Soap11()
     __out_protocol__ = Soap11()
 
-    @spyne.srpc(CustomUnicode, CustomUnicode, CustomUnicode, CustomUnicode, CustomUnicode, _returns=CustomUnicode)
-    def SendMessage(strLsh, strPhone, strNR, strPartID='', strUn=''):
+    @spyne.srpc(CustomUnicode, CustomUnicode, CustomUnicode, CustomUnicode, _returns=CustomUnicode)
+    def SendMessage(strLsh, strPhone, strNR, strPartID=''):
         sms_url = current_app.config['SMS_SOAP_URL']
         client = Client(sms_url)
         result = client.service.SendMessage(strLsh, strPhone, strNR, strPartID)
