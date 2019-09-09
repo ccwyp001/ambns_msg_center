@@ -20,8 +20,16 @@ class SmsWebService(spyne.Service):
     # need patch in spyne/interface/wsdl/wsdl11.py:326 change message name to 'parameters'
     @spyne.srpc(Unicode, Unicode, Unicode, Unicode, _returns=Unicode)
     def SendMessage(strLsh, strPhone, strNR, strPartID=''):
+        strPhone = deal_phone_num(strPhone)
         sms_url = current_app.config['SMS_SOAP_URL']
         client = Client(sms_url)
         result = client.service.SendMessage(strLsh, strPhone, strNR, strPartID)
         send_phone_call.delay(strLsh, strPhone, strNR, strPartID)
         return result
+
+
+def deal_phone_num(str_num):
+    num = str(str_num)
+    if num.startswith('01') and not num.startswith('010'):
+        return num[1:]
+    return num
