@@ -110,6 +110,7 @@ def phone_result(tts_id):
     url = current_app.config['TTS_SOAP_URL']
     user_code = current_app.config['TTS_USER_CODE']
     pwd = current_app.config['TTS_PWD']
+    res_timeout = current_app.config['TTS_RESULT_TIMEOUT']
     timestamp = int(time.time())
     page = 1
     size = 20
@@ -133,6 +134,11 @@ def phone_result(tts_id):
         accept_duration = None
         accept_status = 999
         accept_reason = '连接ws服务器异常'
+
+    if timestamp - tts.send_at >= res_timeout:
+        accept_at = timestamp
+        accept_reason = '超过规定时长未获取到结果'
+        accept_status = 1
 
     if not accept_at:
         phone_result.apply_async(
