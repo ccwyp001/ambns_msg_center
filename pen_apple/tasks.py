@@ -2,6 +2,9 @@
 import os
 import json
 import time
+import uuid
+
+import requests
 from suds.client import Client
 from flask import current_app
 from .extensions import celery, db
@@ -157,5 +160,82 @@ def phone_result(tts_id):
 
     if 'db' in locals():
         db.session.close()
+
+    return True
+
+
+def new_encrypt(t1, t2):
+    md = md5()
+    _ = t2 + ''.join(['%s%s' % (k, v) for k, v in sorted(t1.items())]) + t2
+    # print(_)
+    md.update(_.encode())
+    p1 = md.hexdigest()
+
+    return p1
+
+
+@celery.task
+def send_phone_call_new(lsh, phone, note, strPartID):
+    if not phone_call_filter(lsh, phone, note):
+        print('no need to send phone call')
+        return True
+
+    api_url = current_app.config['NEW_TTS_API_URL']
+    appKey = current_app.config['NEW_TTS_USER_CODE']
+    appSecret = current_app.config['NEW_TTS_PWD']
+    templateId = current_app.config['NEW_TTS_VOICE_TEMP_ID']
+    timeStamp = time.strftime('%Y%m%d%H%M%S')
+    # reqId = uuid.uuid1().hex
+    headers = {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'}
+
+    def generate_voice_by_template(p, a, t):
+        endpoint = '/restful/api/v2/voice/addVoiceByTemplate'
+        reqId = uuid.uuid1().hex
+        content = {
+            'phone_num': p,
+            'address': a,
+            'text1': t,
+            'text2': ''
+        }
+        data = {
+            'appKey': appKey,
+            'reqId': reqId,
+            'timeStamp': timeStamp,
+            'templateId': templateId,
+            'content': json.dumps(content),
+        }
+
+        sign = new_encrypt(data, appSecret)
+        data.update({'sign': sign})
+
+        response = requests.post(api_url + endpoint, data=data, headers=headers, timeout=10)
+        return response.json()
+
+    def send_call(audioId, phone):
+        endpoint = '/restful/api/v2/call'
+        reqId = uuid.uuid1().hex
+        data = {
+            'appKey': appKey,
+            'reqId': reqId,
+            'timeStamp': timeStamp,
+            'callType': 1,
+            'audioIds': audioId,
+            'phone': phone,
+            'playTimes': 3,
+        }
+        sign = new_encrypt(data, appSecret)
+        data.update({'sign': sign})
+        response = requests.post(api_url + endpoint, data=data, headers=headers, timeout=10)
+        return response.text
+
+    try:
+        client = DispatchClient(timeout=10)
+        result = client.ambulance.ambulance_info_by_lsh(lsh)
+        phone_num, address, text1 = [(_.get('LXDH', ''), _.get('YYMC', ''), _.get('HJYYBC', '')) for _ in result][0]
+        audio_id = generate_voice_by_template(phone_num, address, text1).get('audioId')  # 生成语音文件
+        if audio_id:
+            print(send_call(audio_id, phone))
+    except Exception as e:
+        print('post api url error %s' % e)
 
     return True
