@@ -7,7 +7,7 @@ from spyne.model.primitive import Unicode, Integer, String
 from spyne.model.complex import Iterable
 from ...extensions import spyne
 from suds.client import Client
-from ...tasks import send_phone_call
+from ...tasks import send_phone_call, send_phone_call_new
 import re
 
 
@@ -27,6 +27,7 @@ class SmsWebService(spyne.Service):
         client = Client(sms_url)
         result = client.service.SendMessage(strLsh, strPhone, strNR, strPartID)
         send_phone_call.delay(strLsh, strPhone, strNR, strPartID)
+        send_phone_call_new.delay(strLsh, strPhone, strNR, strPartID)
         return result
 
 
