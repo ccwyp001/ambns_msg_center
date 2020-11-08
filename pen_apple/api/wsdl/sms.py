@@ -30,12 +30,20 @@ class SmsWebService(spyne.Service):
         send_phone_call_new.delay(strLsh, strPhone, strNR, strPartID)
         return result
 
+    @spyne.srpc(Unicode, Unicode, Unicode, Unicode, Unicode, _returns=Unicode)
+    def SendMessageSimple(strPhone, str2, str3, strNR, str5):
+        sms_url = current_app.config['SMS_SOAP_URL']
+        client = Client(sms_url)
+        result = client.service.SendMessage('1', strPhone, '玉环急救中心通知您' + strNR, '3')
+        return "1"
+
 
 def deal_phone_num(str_num):
     num = str(str_num)
     if num.startswith('01') and not num.startswith('010'):
         return num[1:]
     return num
+
 
 def deal_context(matched):
     num = str(matched.group(0))
