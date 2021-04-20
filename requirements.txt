@@ -30,7 +30,7 @@ mock==2.0.0
 more-itertools==7.2.0
 pbr==5.4.1
 pluggy==0.6.0
-py==1.8.0
+py==1.10.0
 PyMySQL==0.7.11
 pytest==3.6.3
 python-dateutil==2.8.0
