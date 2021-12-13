@@ -23,7 +23,7 @@ idna==2.8
 itsdangerous==1.1.0
 Jinja2==2.10.1
 kombu==4.6.3
-lxml==4.3.4
+lxml==4.6.5
 Mako==1.0.14
 MarkupSafe==1.1.1
 mock==2.0.0
